@@ -11,6 +11,7 @@ import android.os.Environment
 import android.webkit.URLUtil
 import androidx.core.content.ContextCompat
 import com.example.kinotlin.profile.domain.ResumeDownloader
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -20,10 +21,11 @@ class AndroidResumeDownloader(
 
     override suspend fun download(url: String): Uri? {
         val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val fileName = URLUtil.guessFileName(url, null, null)
+        val sanitizedUrl = sanitizeUrl(url)
+        val fileName = URLUtil.guessFileName(sanitizedUrl, null, null)
 
         val downloadId = runCatching {
-            val request = DownloadManager.Request(Uri.parse(url))
+            val request = DownloadManager.Request(Uri.parse(sanitizedUrl))
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
@@ -37,41 +39,49 @@ class AndroidResumeDownloader(
             dm.enqueue(request)
         }.getOrNull() ?: return null
 
-        return suspendCancellableCoroutine { cont ->
-            val receiver = object : BroadcastReceiver() {
-                override fun onReceive(ctx: Context?, intent: Intent?) {
-                    val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L) ?: -1L
-                    if (id != downloadId) return
+        return withTimeoutOrNull(120_000L) {
+            suspendCancellableCoroutine { cont ->
+                val receiver = object : BroadcastReceiver() {
+                    override fun onReceive(ctx: Context?, intent: Intent?) {
+                        val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L) ?: -1L
+                        if (id != downloadId) return
 
-                    val uri = runCatching {
-                        val query = DownloadManager.Query().setFilterById(downloadId)
-                        dm.query(query)?.use { cursor ->
-                            if (!cursor.moveToFirst()) return@use null
+                        val uri = runCatching {
+                            val query = DownloadManager.Query().setFilterById(downloadId)
+                            dm.query(query)?.use { cursor ->
+                                if (!cursor.moveToFirst()) return@use null
 
-                            val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                            val status = if (statusIndex >= 0) cursor.getInt(statusIndex) else DownloadManager.STATUS_FAILED
-                            if (status != DownloadManager.STATUS_SUCCESSFUL) return@use null
+                                val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                                val status = if (statusIndex >= 0) cursor.getInt(statusIndex) else DownloadManager.STATUS_FAILED
+                                if (status != DownloadManager.STATUS_SUCCESSFUL) return@use null
 
-                            dm.getUriForDownloadedFile(downloadId)
-                        }
-                    }.getOrNull()
+                                dm.getUriForDownloadedFile(downloadId)
+                            }
+                        }.getOrNull()
 
-                    if (cont.isActive) cont.resume(uri)
+                        if (cont.isActive) cont.resume(uri)
 
-                    runCatching { context.unregisterReceiver(this) }
+                        runCatching { context.unregisterReceiver(this) }
+                    }
+                }
+
+                ContextCompat.registerReceiver(
+                    context,
+                    receiver,
+                    IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                    ContextCompat.RECEIVER_NOT_EXPORTED,
+                )
+
+                cont.invokeOnCancellation {
+                    runCatching { context.unregisterReceiver(receiver) }
                 }
             }
-
-            ContextCompat.registerReceiver(
-                context,
-                receiver,
-                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                ContextCompat.RECEIVER_NOT_EXPORTED,
-            )
-
-            cont.invokeOnCancellation {
-                runCatching { context.unregisterReceiver(receiver) }
-            }
         }
+    }
+
+    private fun sanitizeUrl(url: String): String {
+        return url.trim()
+            .replace("'", "%27")
+            .replace(" ", "%20")
     }
 }

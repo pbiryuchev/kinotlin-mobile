@@ -40,11 +40,12 @@ class ProfileViewModel(
         if (url.isBlank()) return
 
         viewModelScope.launch {
+            _events.emit(Event.ShowMessage("Скачивание началось…"))
             val uri = runCatching { downloadResume(url) }.getOrNull()
             if (uri != null) {
                 _events.emit(Event.OpenUri(uri))
             } else {
-                _events.emit(Event.ShowMessage("Не удалось скачать резюме"))
+                _events.emit(Event.ShowMessage("Не удалось скачать резюме (проверь ссылку)"))
             }
         }
     }
