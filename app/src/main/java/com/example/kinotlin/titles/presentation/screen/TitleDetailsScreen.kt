@@ -22,14 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -38,7 +37,7 @@ import com.example.kinotlin.titles.presentation.model.TitleDetailsScreenState
 import com.example.kinotlin.uikit.FullscreenError
 import com.example.kinotlin.uikit.FullscreenLoading
 
-@OptIn(ExperimentalMaterial3Api::class, com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TitleDetailsScreen(
     titleId: String,
@@ -102,7 +101,7 @@ fun TitleDetailsScreen(
                     ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                         val (poster, title, meta, genres, rating) = createRefs()
 
-                        GlideImage(
+                        AsyncImage(
                             model = state.title.primaryImage.url,
                             contentDescription = state.title.primaryTitle,
                             modifier = Modifier

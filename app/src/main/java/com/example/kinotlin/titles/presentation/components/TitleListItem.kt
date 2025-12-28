@@ -1,5 +1,3 @@
-@file:OptIn(com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi::class)
-
 package com.example.kinotlin.titles.presentation.components
 
 import androidx.compose.foundation.clickable
@@ -21,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import com.example.kinotlin.titles.presentation.model.TitleUiModel
 
 @Composable
@@ -57,7 +55,7 @@ fun TitleListItem(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.Top,
             ) {
-                GlideImage(
+                AsyncImage(
                     model = title.primaryImage.url,
                     contentDescription = title.primaryTitle,
                     modifier = Modifier
