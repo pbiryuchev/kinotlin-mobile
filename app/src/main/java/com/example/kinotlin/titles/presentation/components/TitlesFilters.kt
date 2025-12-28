@@ -1,4 +1,4 @@
-package com.example.kinotlin.titles.presentation.screen
+package com.example.kinotlin.titles.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,8 +29,8 @@ internal fun TitlesFiltersBlock(
     onSortBySelected: (String) -> Unit,
     onMinRatingSelected: (Float?) -> Unit,
 ) {
-    val selectedType = state.filter.types?.firstOrNull() ?: "MOVIE"
-    val selectedSortBy = state.filter.sortBy ?: "SORT_BY_POPULARITY"
+    val selectedType = state.filter.types?.firstOrNull() ?: TitlesFilterOptions.TYPE_MOVIE
+    val selectedSortBy = state.filter.sortBy ?: TitlesFilterOptions.SORT_BY_POPULARITY
     val minRating = state.filter.minAggregateRating
 
     Column(
@@ -46,52 +46,25 @@ internal fun TitlesFiltersBlock(
             DropdownField(
                 modifier = Modifier.weight(1f),
                 label = "Тип",
-                selectedText = when (selectedType) {
-                    "TV_SERIES" -> "Сериалы"
-                    else -> "Фильмы"
-                },
-                items = listOf(
-                    "MOVIE" to "Фильмы",
-                    "TV_SERIES" to "Сериалы",
-                ),
+                selectedText = TitlesFilterOptions.typeLabel(selectedType),
+                items = TitlesFilterOptions.typeOptions.map { it.value to it.label },
                 onSelected = { raw -> onTypeSelected(raw) },
             )
 
             DropdownField(
                 modifier = Modifier.weight(1f),
                 label = "Сортировка",
-                selectedText = when (selectedSortBy) {
-                    "SORT_BY_USER_RATING" -> "Рейтинг"
-                    else -> "Популярность"
-                },
-                items = listOf(
-                    "SORT_BY_POPULARITY" to "Популярность",
-                    "SORT_BY_USER_RATING" to "Рейтинг",
-                ),
+                selectedText = TitlesFilterOptions.sortLabel(selectedSortBy),
+                items = TitlesFilterOptions.sortOptions.map { it.value to it.label },
                 onSelected = { raw -> onSortBySelected(raw) },
             )
-        }
-
-        val ratingText = when (minRating) {
-            null -> "Любой"
-            6.0f -> "6+"
-            7.0f -> "7+"
-            8.0f -> "8+"
-            9.0f -> "9+"
-            else -> "${minRating}+"
         }
 
         DropdownField(
             modifier = Modifier.fillMaxWidth(),
             label = "Мин. рейтинг IMDb",
-            selectedText = ratingText,
-            items = listOf(
-                null to "Любой",
-                6.0f to "6+",
-                7.0f to "7+",
-                8.0f to "8+",
-                9.0f to "9+",
-            ),
+            selectedText = TitlesFilterOptions.minRatingLabel(minRating),
+            items = TitlesFilterOptions.minRatingOptions.map { it.value to it.label },
             onSelected = { value -> onMinRatingSelected(value) },
         )
     }

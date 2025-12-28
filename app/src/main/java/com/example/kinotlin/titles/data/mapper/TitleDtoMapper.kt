@@ -1,7 +1,7 @@
 package com.example.kinotlin.titles.data.mapper
 
-import com.example.kinotlin.characters.presentation.model.TitleType
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.model.TitleType
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 import com.example.kinotlin.titles.data.dto.TitleDto
 
 class TitleDtoMapper {

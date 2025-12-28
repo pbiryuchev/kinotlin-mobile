@@ -1,6 +1,6 @@
 package com.example.kinotlin.titles.data.repository
 
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 import com.example.kinotlin.titles.data.api.ImdbTitlesApi
 import com.example.kinotlin.titles.data.mapper.TitleDtoMapper
 import com.example.kinotlin.titles.domain.TitlesRepository

@@ -1,4 +1,4 @@
-package com.example.kinotlin.characters.presentation.model
+package com.example.kinotlin.titles.presentation.model
 
 data class TitleDetailsViewState (
     val title: TitleUiModel,

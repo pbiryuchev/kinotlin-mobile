@@ -29,7 +29,8 @@ import org.koin.androidx.compose.koinViewModel
 import com.example.kinotlin.TitleDetails
 import com.example.kinotlin.navigation.TopLevelBackStack
 import com.example.kinotlin.navigation.Route
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.components.TitlesFiltersBlock
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 import com.example.kinotlin.titles.presentation.model.TitlesListViewState
 import com.example.kinotlin.titles.presentation.viewModel.TitlesListViewModel
 import com.example.kinotlin.uikit.FullscreenError

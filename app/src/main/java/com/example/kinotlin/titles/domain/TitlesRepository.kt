@@ -1,6 +1,6 @@
 package com.example.kinotlin.titles.domain
 
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 
 interface TitlesRepository {
     suspend fun getTitles(filter: TitlesFilter = TitlesFilter()): List<TitleUiModel>

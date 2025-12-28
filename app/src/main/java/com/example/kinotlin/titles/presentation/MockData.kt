@@ -1,7 +1,7 @@
-package com.example.kinotlin.characters.presentation
+package com.example.kinotlin.titles.presentation
 
-import com.example.kinotlin.characters.presentation.model.TitleType
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.model.TitleType
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 
 object MockData {
     fun getTitles(): List<TitleUiModel> = listOf(

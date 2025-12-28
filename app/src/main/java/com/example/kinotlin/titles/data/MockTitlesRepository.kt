@@ -1,7 +1,7 @@
 package com.example.kinotlin.titles.data
 
-import com.example.kinotlin.characters.presentation.MockData
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.MockData
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
 import com.example.kinotlin.titles.domain.TitlesRepository
 import com.example.kinotlin.titles.domain.TitlesFilter
 

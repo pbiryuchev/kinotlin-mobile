@@ -1,4 +1,4 @@
-package com.example.kinotlin.characters.presentation.model
+package com.example.kinotlin.titles.presentation.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName

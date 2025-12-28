@@ -2,7 +2,7 @@ package com.example.kinotlin.titles.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kinotlin.characters.presentation.model.TitleDetailsViewState
+import com.example.kinotlin.titles.presentation.model.TitleDetailsViewState
 import com.example.kinotlin.titles.domain.GetTitleDetailsUseCase
 import com.example.kinotlin.titles.domain.TitlesRepository
 import com.example.kinotlin.titles.presentation.model.TitleDetailsScreenState
