@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,7 +34,7 @@ fun FavoritesScreen(
     val viewModel = koinViewModel<FavoritesViewModel>()
     val items by viewModel.state.collectAsStateWithLifecycle()
 
-    Scaffold { padding ->
+    Scaffold (contentWindowInsets = WindowInsets(0.dp)) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             if (items.isEmpty()) {
                 Column(
@@ -42,7 +43,7 @@ fun FavoritesScreen(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(text = "Пока нет избранного", style = MaterialTheme.typography.headlineSmall)
-                    Text(text = "Добавь фильм/сериал на экране деталей", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Добавь фильм или сериал на экране деталей", style = MaterialTheme.typography.bodyMedium)
                 }
             } else {
                 LazyColumn(

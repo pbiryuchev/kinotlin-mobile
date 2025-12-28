@@ -2,6 +2,7 @@ package com.example.kinotlin.titles.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -77,6 +78,7 @@ fun TitleDetailsScreen(
                 },
             )
         },
+        contentWindowInsets = WindowInsets(0.dp),
     ) { padding ->
         when (val s = screenState.state) {
             TitleDetailsScreenState.State.Loading -> {
