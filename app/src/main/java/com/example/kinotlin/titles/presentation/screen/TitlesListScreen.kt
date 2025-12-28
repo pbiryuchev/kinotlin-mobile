@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,28 +29,57 @@ import org.koin.androidx.compose.koinViewModel
 import com.example.kinotlin.TitleDetails
 import com.example.kinotlin.navigation.TopLevelBackStack
 import com.example.kinotlin.navigation.Route
-import com.example.kinotlin.characters.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.components.TitlesFiltersBlock
+import com.example.kinotlin.titles.presentation.model.TitleUiModel
+import com.example.kinotlin.titles.presentation.model.TitlesListViewState
 import com.example.kinotlin.titles.presentation.viewModel.TitlesListViewModel
+import com.example.kinotlin.uikit.FullscreenError
+import com.example.kinotlin.uikit.FullscreenLoading
 @Composable
 fun TitlesListScreen(
     topLevelBackStack: TopLevelBackStack<Route>,
 ) {
     val viewModel = koinViewModel<TitlesListViewModel>()
-    val titles by viewModel.titles.collectAsStateWithLifecycle()
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        items(
-            items = titles,
-            key = { it.id },
-        ) { item ->
-            TitleListItem(
-                title = item,
-                onClick = { topLevelBackStack.add(TitleDetails(item.id)) },
-            )
+    when (val s = state.state) {
+        TitlesListViewState.State.Loading -> {
+            FullscreenLoading()
+        }
+
+        is TitlesListViewState.State.Error -> {
+            FullscreenError(message = s.message, onRetry = viewModel::onRetry)
+        }
+
+        is TitlesListViewState.State.Success -> {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item(key = "filters") {
+                    TitlesFiltersBlock(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = state,
+                        onTypeSelected = viewModel::onTypeSelected,
+                        onSortBySelected = viewModel::onSortBySelected,
+                        onMinRatingSelected = {
+                            viewModel.onMinRatingChanged(it)
+                            viewModel.onMinRatingChangeFinished()
+                        },
+                    )
+                }
+
+                items(
+                    items = s.titles,
+                    key = { it.id },
+                ) { item ->
+                    TitleListItem(
+                        title = item,
+                        onClick = { topLevelBackStack.add(TitleDetails(item.id)) },
+                    )
+                }
+            }
         }
     }
 }

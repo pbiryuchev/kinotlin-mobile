@@ -1,4 +1,4 @@
-package com.example.kinotlin.characters.presentation.model
+package com.example.kinotlin.titles.presentation.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -51,5 +51,11 @@ enum class TitleType {
     TV_SPECIAL,
 
     @SerialName("short")
-    SHORT
+    SHORT,
+
+    @SerialName("video")
+    VIDEO,
+
+    @SerialName("videoGame")
+    VIDEO_GAME
 }
