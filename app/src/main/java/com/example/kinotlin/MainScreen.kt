@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,6 +28,7 @@ import com.example.kinotlin.profile.ProfileScreen
 import com.example.kinotlin.titles.presentation.screen.TitleDetailsScreen
 import com.example.kinotlin.titles.presentation.screen.TitlesFilterSettingsDialog
 import com.example.kinotlin.titles.presentation.screen.TitlesListScreen
+import com.example.kinotlin.titles.presentation.screen.FavoritesScreen
 
 interface TopLevelRoute : Route {
     val icon: ImageVector
@@ -42,6 +45,11 @@ data object Profile : TopLevelRoute {
 }
 
 @Serializable
+data object Favorites : TopLevelRoute {
+    override val icon: ImageVector = Icons.Default.Star
+}
+
+@Serializable
 data class TitleDetails(val titleId: String) : Route
 
 @Serializable
@@ -55,7 +63,7 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             NavigationBar {
-                listOf(Titles, Profile).forEach { route ->
+                listOf(Titles, Favorites, Profile).forEach { route ->
                     NavigationBarItem(
                         icon = { Icon(route.icon, null) },
                         selected = topLevelBackStack.topLevelKey == route,
@@ -80,6 +88,9 @@ fun MainScreen() {
                 }
                 entry<Profile> {
                     ProfileScreen()
+                }
+                entry<Favorites> {
+                    FavoritesScreen(topLevelBackStack)
                 }
                 entry<TitleDetails> {
                     TitleDetailsScreen(
