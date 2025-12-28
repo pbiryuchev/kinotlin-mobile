@@ -27,6 +27,16 @@ import com.example.kinotlin.titles.presentation.viewModel.FavoritesViewModel
 import com.example.kinotlin.titles.presentation.viewModel.TitlesFilterSettingsViewModel
 import com.example.kinotlin.titles.presentation.viewModel.TitleDetailsViewModel
 import com.example.kinotlin.titles.presentation.viewModel.TitlesListViewModel
+import com.example.kinotlin.profile.data.datastore.ProfileStore
+import com.example.kinotlin.profile.data.repository.LocalProfileRepository
+import com.example.kinotlin.profile.data.resume.AndroidResumeDownloader
+import com.example.kinotlin.profile.domain.DownloadResumeUseCase
+import com.example.kinotlin.profile.domain.GetProfileUseCase
+import com.example.kinotlin.profile.domain.ProfileRepository
+import com.example.kinotlin.profile.domain.ResumeDownloader
+import com.example.kinotlin.profile.domain.SaveProfileUseCase
+import com.example.kinotlin.profile.presentation.viewModel.EditProfileViewModel
+import com.example.kinotlin.profile.presentation.viewModel.ProfileViewModel
 
 val mainModule = module {
     single { TopLevelBackStack<Route>(Titles) }
@@ -52,6 +62,17 @@ val mainModule = module {
 
     factory { GetTitlesUseCase(get()) }
     factory { GetTitleDetailsUseCase(get()) }
+
+    single { ProfileStore(get()) }
+    single<ProfileRepository> { LocalProfileRepository(get()) }
+    single<ResumeDownloader> { AndroidResumeDownloader(androidContext()) }
+
+    factory { GetProfileUseCase(get()) }
+    factory { SaveProfileUseCase(get()) }
+    factory { DownloadResumeUseCase(get()) }
+
+    viewModel { ProfileViewModel(get(), get()) }
+    viewModel { EditProfileViewModel(get(), get()) }
 
     viewModel { TitlesListViewModel(get(), get(), get()) }
     viewModel { TitlesFilterSettingsViewModel(get(), get(), get()) }

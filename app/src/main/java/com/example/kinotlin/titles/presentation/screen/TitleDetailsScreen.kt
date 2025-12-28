@@ -1,13 +1,18 @@
 package com.example.kinotlin.titles.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.ImageNotSupported
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
@@ -17,18 +22,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import kotlin.math.roundToInt
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -101,17 +109,57 @@ fun TitleDetailsScreen(
                     ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                         val (poster, title, meta, genres, rating) = createRefs()
 
-                        AsyncImage(
-                            model = state.title.primaryImage.url,
-                            contentDescription = state.title.primaryTitle,
-                            modifier = Modifier
-                                .constrainAs(poster) {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                }
-                                .fillMaxWidth(0.32f)
-                                .clip(MaterialTheme.shapes.large),
-                        )
+                        val posterUrl = state.title.primaryImage.url
+                        val posterModifier = Modifier
+                            .constrainAs(poster) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                            }
+                            .fillMaxWidth(0.32f)
+                            .aspectRatio(2f / 3f)
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large)
+
+                        if (posterUrl.isBlank()) {
+                            Box(
+                                modifier = posterModifier,
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ImageNotSupported,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        } else {
+                            SubcomposeAsyncImage(
+                                model = posterUrl,
+                                contentDescription = state.title.primaryTitle,
+                                contentScale = ContentScale.Crop,
+                                modifier = posterModifier,
+                                loading = {
+                                    Box(
+                                        modifier = Modifier.matchParentSize(),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        CircularProgressIndicator(strokeWidth = 2.dp)
+                                    }
+                                },
+                                error = {
+                                    Box(
+                                        modifier = Modifier.matchParentSize(),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ImageNotSupported,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                },
+                            )
+                        }
 
                         Text(
                             text = state.title.primaryTitle,
@@ -164,7 +212,7 @@ fun TitleDetailsScreen(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = state.title.plot,
+                        text = state.title.plot.takeIf { it.isNotBlank() } ?: "Описание отсутствует",
                         style = MaterialTheme.typography.bodyMedium,
                     )
 
