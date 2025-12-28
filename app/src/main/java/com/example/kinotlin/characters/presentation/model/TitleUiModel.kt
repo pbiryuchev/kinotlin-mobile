@@ -51,5 +51,11 @@ enum class TitleType {
     TV_SPECIAL,
 
     @SerialName("short")
-    SHORT
+    SHORT,
+
+    @SerialName("video")
+    VIDEO,
+
+    @SerialName("videoGame")
+    VIDEO_GAME
 }

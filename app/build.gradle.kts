@@ -74,4 +74,12 @@ dependencies {
 
     // DI
     implementation(libs.bundles.koin)
+
+    // Network
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chucker.no.op)
 }
