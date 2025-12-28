@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
@@ -23,6 +24,7 @@ import com.example.kinotlin.navigation.Route
 import com.example.kinotlin.navigation.TopLevelBackStack
 import com.example.kinotlin.profile.ProfileScreen
 import com.example.kinotlin.titles.presentation.screen.TitleDetailsScreen
+import com.example.kinotlin.titles.presentation.screen.TitlesFilterSettingsDialog
 import com.example.kinotlin.titles.presentation.screen.TitlesListScreen
 
 interface TopLevelRoute : Route {
@@ -41,6 +43,9 @@ data object Profile : TopLevelRoute {
 
 @Serializable
 data class TitleDetails(val titleId: String) : Route
+
+@Serializable
+data object TitlesFilterSettings : Route
 
 @Composable
 fun MainScreen() {
@@ -81,6 +86,11 @@ fun MainScreen() {
                         titleId = it.titleId,
                         onBack = { topLevelBackStack.removeLast() },
                     )
+                }
+                entry<TitlesFilterSettings> {
+                    with(DialogSceneStrategy.dialog(DialogProperties())) {
+                        TitlesFilterSettingsDialog()
+                    }
                 }
             },
         )
