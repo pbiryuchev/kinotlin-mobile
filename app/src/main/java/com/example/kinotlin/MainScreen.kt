@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
@@ -23,7 +26,9 @@ import com.example.kinotlin.navigation.Route
 import com.example.kinotlin.navigation.TopLevelBackStack
 import com.example.kinotlin.profile.ProfileScreen
 import com.example.kinotlin.titles.presentation.screen.TitleDetailsScreen
+import com.example.kinotlin.titles.presentation.screen.TitlesFilterSettingsDialog
 import com.example.kinotlin.titles.presentation.screen.TitlesListScreen
+import com.example.kinotlin.titles.presentation.screen.FavoritesScreen
 
 interface TopLevelRoute : Route {
     val icon: ImageVector
@@ -40,7 +45,15 @@ data object Profile : TopLevelRoute {
 }
 
 @Serializable
+data object Favorites : TopLevelRoute {
+    override val icon: ImageVector = Icons.Default.Star
+}
+
+@Serializable
 data class TitleDetails(val titleId: String) : Route
+
+@Serializable
+data object TitlesFilterSettings : Route
 
 @Composable
 fun MainScreen() {
@@ -50,7 +63,7 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             NavigationBar {
-                listOf(Titles, Profile).forEach { route ->
+                listOf(Titles, Favorites, Profile).forEach { route ->
                     NavigationBarItem(
                         icon = { Icon(route.icon, null) },
                         selected = topLevelBackStack.topLevelKey == route,
@@ -76,11 +89,19 @@ fun MainScreen() {
                 entry<Profile> {
                     ProfileScreen()
                 }
+                entry<Favorites> {
+                    FavoritesScreen(topLevelBackStack)
+                }
                 entry<TitleDetails> {
                     TitleDetailsScreen(
                         titleId = it.titleId,
                         onBack = { topLevelBackStack.removeLast() },
                     )
+                }
+                entry<TitlesFilterSettings> {
+                    with(DialogSceneStrategy.dialog(DialogProperties())) {
+                        TitlesFilterSettingsDialog()
+                    }
                 }
             },
         )

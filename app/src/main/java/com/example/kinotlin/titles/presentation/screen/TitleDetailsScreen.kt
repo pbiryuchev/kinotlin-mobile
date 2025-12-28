@@ -2,6 +2,7 @@ package com.example.kinotlin.titles.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,14 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import kotlin.math.roundToInt
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -35,7 +37,7 @@ import com.example.kinotlin.titles.presentation.model.TitleDetailsScreenState
 import com.example.kinotlin.uikit.FullscreenError
 import com.example.kinotlin.uikit.FullscreenLoading
 
-@OptIn(ExperimentalMaterial3Api::class, com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TitleDetailsScreen(
     titleId: String,
@@ -62,8 +64,20 @@ fun TitleDetailsScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 },
+                actions = {
+                    val s = screenState.state
+                    if (s is TitleDetailsScreenState.State.Success) {
+                        IconButton(onClick = viewModel::onFavoriteToggle) {
+                            Icon(
+                                imageVector = if (s.details.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                                contentDescription = "Избранное",
+                            )
+                        }
+                    }
+                },
             )
         },
+        contentWindowInsets = WindowInsets(0.dp),
     ) { padding ->
         when (val s = screenState.state) {
             TitleDetailsScreenState.State.Loading -> {
@@ -87,7 +101,7 @@ fun TitleDetailsScreen(
                     ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                         val (poster, title, meta, genres, rating) = createRefs()
 
-                        GlideImage(
+                        AsyncImage(
                             model = state.title.primaryImage.url,
                             contentDescription = state.title.primaryTitle,
                             modifier = Modifier

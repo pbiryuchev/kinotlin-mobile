@@ -2,51 +2,38 @@ package com.example.kinotlin.titles.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kinotlin.titles.data.badge.TitlesFiltersBadgeCache
+import com.example.kinotlin.titles.data.datastore.TitlesFiltersStore
 import com.example.kinotlin.titles.domain.GetTitlesUseCase
 import com.example.kinotlin.titles.domain.TitlesFilter
 import com.example.kinotlin.titles.presentation.model.TitlesListViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TitlesListViewModel(
     private val getTitles: GetTitlesUseCase,
+    private val filtersStore: TitlesFiltersStore,
+    private val badgeCache: TitlesFiltersBadgeCache,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(TitlesListViewState())
     val viewState: StateFlow<TitlesListViewState> = _viewState.asStateFlow()
 
     init {
-        load()
+        viewModelScope.launch {
+            filtersStore.filterFlow().collectLatest { filter ->
+                badgeCache.update(filter)
+                _viewState.update { it.copy(filter = filter) }
+                load(filter)
+            }
+        }
     }
 
-    fun onRetry() = load()
-
-    fun onTypeSelected(type: String) {
-        val current = _viewState.value.filter
-        val updated = current.copy(types = listOf(type))
-        _viewState.update { it.copy(filter = updated) }
-        load(updated)
-    }
-
-    fun onSortBySelected(sortBy: String) {
-        val current = _viewState.value.filter
-        val updated = current.copy(sortBy = sortBy)
-        _viewState.update { it.copy(filter = updated) }
-        load(updated)
-    }
-
-    fun onMinRatingChanged(minRating: Float?) {
-        val current = _viewState.value.filter
-        val updated = current.copy(minAggregateRating = minRating)
-        _viewState.update { it.copy(filter = updated) }
-    }
-
-    fun onMinRatingChangeFinished() {
-        load(_viewState.value.filter)
-    }
+    fun onRetry() = load(_viewState.value.filter)
 
     private fun load(filter: TitlesFilter = _viewState.value.filter) {
         viewModelScope.launch {
