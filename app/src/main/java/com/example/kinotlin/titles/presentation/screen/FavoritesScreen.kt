@@ -1,5 +1,3 @@
-@file:OptIn(com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi::class)
-
 package com.example.kinotlin.titles.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement

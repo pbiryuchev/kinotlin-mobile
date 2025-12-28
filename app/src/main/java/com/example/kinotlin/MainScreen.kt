@@ -24,7 +24,8 @@ import kotlinx.serialization.Serializable
 import org.koin.java.KoinJavaComponent.inject
 import com.example.kinotlin.navigation.Route
 import com.example.kinotlin.navigation.TopLevelBackStack
-import com.example.kinotlin.profile.ProfileScreen
+import com.example.kinotlin.profile.presentation.screen.EditProfileScreen
+import com.example.kinotlin.profile.presentation.screen.ProfileScreen
 import com.example.kinotlin.titles.presentation.screen.TitleDetailsScreen
 import com.example.kinotlin.titles.presentation.screen.TitlesFilterSettingsDialog
 import com.example.kinotlin.titles.presentation.screen.TitlesListScreen
@@ -48,6 +49,9 @@ data object Profile : TopLevelRoute {
 data object Favorites : TopLevelRoute {
     override val icon: ImageVector = Icons.Default.Star
 }
+
+@Serializable
+data object EditProfile : Route
 
 @Serializable
 data class TitleDetails(val titleId: String) : Route
@@ -87,7 +91,10 @@ fun MainScreen() {
                     TitlesListScreen(topLevelBackStack)
                 }
                 entry<Profile> {
-                    ProfileScreen()
+                    ProfileScreen(topLevelBackStack)
+                }
+                entry<EditProfile> {
+                    EditProfileScreen(onBack = { topLevelBackStack.removeLast() })
                 }
                 entry<Favorites> {
                     FavoritesScreen(topLevelBackStack)
