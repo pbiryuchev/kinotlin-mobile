@@ -1,6 +1,5 @@
 package com.example.kinotlin.titles.presentation.model
 
-import com.example.kinotlin.titles.presentation.model.TitleUiModel
 import com.example.kinotlin.titles.domain.TitlesFilter
 
 data class TitlesListViewState(

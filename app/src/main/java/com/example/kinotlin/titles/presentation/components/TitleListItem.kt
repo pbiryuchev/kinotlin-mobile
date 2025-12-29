@@ -129,13 +129,6 @@ fun TitleListItem(
 }
 
 @Composable
-private fun PosterLoading(
-    modifier: Modifier = Modifier,
-) {
-    PosterFallback(modifier = modifier)
-}
-
-@Composable
 private fun PosterFallback(
     modifier: Modifier = Modifier,
 ) {

@@ -1,7 +1,5 @@
 package com.example.kinotlin.titles.presentation.model
 
-import com.example.kinotlin.titles.presentation.model.TitleDetailsViewState
-
 data class TitleDetailsScreenState(
     val state: State = State.Loading,
 ) {

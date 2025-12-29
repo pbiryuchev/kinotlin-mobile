@@ -25,11 +25,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.kinotlin.profile.domain.Profile
+import com.example.kinotlin.profile.presentation.model.ProfileUiModel
 
 @Composable
 fun ProfileContent(
-    profile: Profile,
+    profile: ProfileUiModel,
     onResumeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -40,56 +40,107 @@ fun ProfileContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val avatarModifier = Modifier
-            .size(140.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+        ProfileAvatar(avatarUri = profile.avatarUri)
+        ProfileName(fullName = profile.fullName)
+        ProfilePosition(position = profile.position)
 
-        if (profile.avatarUri.isNullOrBlank()) {
-            Box(
-                modifier = avatarModifier,
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Аватар",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(64.dp),
-                )
-            }
-        } else {
-            AsyncImage(
-                model = profile.avatarUri,
-                contentDescription = "Аватар",
-                contentScale = ContentScale.Crop,
-                modifier = avatarModifier,
-            )
-        }
-
-        Text(
-            text = profile.fullName.ifBlank { "Имя не задано" },
-            style = MaterialTheme.typography.headlineSmall,
+        ResumeButton(
+            isEnabled = profile.resumeUrl.isNotBlank(),
+            onClick = onResumeClick,
         )
+    }
+}
 
-        if (profile.position.isNotBlank()) {
-            Text(
-                text = profile.position,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+@Composable
+private fun ProfileAvatar(
+    avatarUri: String?,
+    modifier: Modifier = Modifier,
+) {
+    val avatarModifier = Modifier
+        .size(140.dp)
+        .clip(CircleShape)
+        .background(MaterialTheme.colorScheme.surfaceVariant)
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+    if (avatarUri.isNullOrBlank()) {
+        DefaultAvatar(modifier = modifier.then(avatarModifier))
+    } else {
+        UserAvatar(avatarUri = avatarUri, modifier = modifier.then(avatarModifier))
+    }
+}
+
+@Composable
+private fun DefaultAvatar(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "Аватар по умолчанию",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(64.dp),
+        )
+    }
+}
+
+@Composable
+private fun UserAvatar(
+    avatarUri: String,
+    modifier: Modifier = Modifier,
+) {
+    AsyncImage(
+        model = avatarUri,
+        contentDescription = "Аватар пользователя",
+        contentScale = ContentScale.Crop,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ProfileName(
+    fullName: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = fullName.ifBlank { "Имя не задано" },
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ProfilePosition(
+    position: String,
+    modifier: Modifier = Modifier,
+) {
+    if (position.isNotBlank()) {
+        Text(
+            text = position,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun ResumeButton(
+    isEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Button(
+            onClick = onClick,
+            enabled = isEnabled,
         ) {
-            Button(
-                onClick = onResumeClick,
-                enabled = profile.resumeUrl.isNotBlank(),
-            ) {
-                Text(text = "Резюме")
-            }
+            Text(text = "Резюме")
         }
     }
 }
