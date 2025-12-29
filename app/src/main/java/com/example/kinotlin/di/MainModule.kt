@@ -42,42 +42,6 @@ val mainModule = module {
     single { TopLevelBackStack<Route>(Titles) }
 
     single<DataStore<Preferences>> { providePreferencesDataStore(androidContext()) }
-    single { TitlesFiltersStore(get()) }
-    single { TitlesFiltersBadgeCache() }
-
-    single {
-        Room.databaseBuilder(
-            androidContext(),
-            TitlesDatabase::class.java,
-            "titles.db",
-        ).fallbackToDestructiveMigration()
-            .build()
-    }
-    single { get<TitlesDatabase>().favoritesDao() }
-    single { FavoritesRepository(get()) }
-
-    single { get<Retrofit>().create(ImdbTitlesApi::class.java) }
-    factory { TitleDtoMapper() }
-    single<TitlesRepository> { NetworkTitlesRepository(get(), get()) }
-
-    factory { GetTitlesUseCase(get()) }
-    factory { GetTitleDetailsUseCase(get()) }
-
-    single { ProfileStore(get()) }
-    single<ProfileRepository> { LocalProfileRepository(get()) }
-    single<ResumeDownloader> { AndroidResumeDownloader(androidContext()) }
-
-    factory { GetProfileUseCase(get()) }
-    factory { SaveProfileUseCase(get()) }
-    factory { DownloadResumeUseCase(get()) }
-
-    viewModel { ProfileViewModel(get(), get()) }
-    viewModel { EditProfileViewModel(get(), get()) }
-
-    viewModel { TitlesListViewModel(get(), get(), get()) }
-    viewModel { TitlesFilterSettingsViewModel(get(), get(), get()) }
-    viewModel { FavoritesViewModel(get()) }
-    viewModel { (titleId: String) -> TitleDetailsViewModel(get(), get(), get(), titleId) }
 }
 
 private fun providePreferencesDataStore(context: Context): DataStore<Preferences> {

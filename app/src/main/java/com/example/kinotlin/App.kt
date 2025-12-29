@@ -6,6 +6,8 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import com.example.kinotlin.di.mainModule
 import com.example.kinotlin.network.networkModule
+import com.example.kinotlin.profile.profileModule
+import com.example.kinotlin.titles.titlesModule
 
 class App: Application() {
     override fun onCreate() {
@@ -13,7 +15,7 @@ class App: Application() {
         startKoin {
             androidLogger()
             androidContext(this@App)
-            modules(mainModule, networkModule)
+            modules(mainModule, networkModule, titlesModule, profileModule)
         }
     }
 }
